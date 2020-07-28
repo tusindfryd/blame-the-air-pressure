@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
@@ -8,54 +8,48 @@ export default function App() {
   const captionsPositive = ["...yeah", "sure", "it seems so", "why not", "yes"]
   const captionsNegative = ["not really", "who's gonna check anyway", "...no", "well..."]
 
+  let chooseRandomWord = (array) => {
+    let max = array.length;
+    return (array[(Math.floor(Math.random() * max) + 1) % max])
+  }
+
   useEffect(() => {
     if (Barometer.isAvailableAsync()) {
       Barometer.addListener(barometerData => {
         setPressure(barometerData.pressure)
       })
       if (pressure != 1013) {
-        setCaption(captionsPositive[0])
+        setCaption(chooseRandomWord(captionsPositive))
       } else {
-        setCaption(captionsNegative[0])
+        setCaption(chooseRandomWord(captionsNegative))
       }
     }
   }, []);
 
-
   const styles = StyleSheet.create({
+    backgroundImage: {
+      height: Dimensions.get('screen').height,
+      width: Dimensions.get('screen').width,
+      position: "absolute",
+    },
     container: {
-      flex: 1,
+      height: Dimensions.get('screen').height,
+      width: Dimensions.get('screen').width,
+      position: "absolute",
       justifyContent: "center"
     },
-    header: {
-
-    },
     pressureTextStyle: {
-
+      textAlign: "center",
+      fontSize: 40
     },
-    buttonContainer: {
-      flexDirection: 'row',
-      alignItems: 'stretch',
-      marginTop: 15,
-    },
-    button: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#eee',
-      padding: 10,
-    },
-    sensor: {
-      marginTop: 45,
-      paddingHorizontal: 10,
-    },
+    captionTextStyle: {
+      textAlign: "center"
+    }
   });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        Can You Blame the Atmospheric Pressure?
-      </Text>
+      <Image source={require('./assets/splash.png')} style={styles.backgroundImage}></Image>
       <Text style={styles.pressureTextStyle}>{pressure} hPa</Text>
       <Text style={styles.captionTextStyle}>{caption}</Text>
     </View>
