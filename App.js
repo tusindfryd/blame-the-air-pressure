@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import { Barometer } from 'expo-sensors';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
 
 import { key } from './key.json'; // Open Weather Map API key
 
@@ -11,10 +12,12 @@ export default function App() {
   const [retries, setRetries] = useState(0);
   const [locationPermissions, setLocationPermissions] = useState(null);
   const [barometerAvailable, setBarometerAvailable] = useState(null);
-  const [pressure, setPressure] = useState(null)
-  const [caption, setCaption] = useState(null)
-  const captionsPositive = ["...yeah", "sure", "it seems so", "why not", "yes"]
-  const captionsNegative = ["not really", "who's gonna check anyway", "...no", "well..."]
+  const [pressure, setPressure] = useState(null);
+  const [caption, setCaption] = useState(null);
+  const [showCredits, setShowCredits] = useState(false);
+
+  const captionsPositive = ["yeah", "sure", "it seems so", "apparently", "yes"];
+  const captionsNegative = ["not really", "it's normal", "nothing unusual here", "could be something else"];
 
   let chooseRandomWord = (array) => {
     let max = array.length;
@@ -28,7 +31,7 @@ export default function App() {
       .then(function (response) { return response.json(); })
       .then(function (response) {
         setPressure(response.main.pressure);
-        if (pressure != 1013) {
+        if (pressure > (1013 + 5) || pressure < (1013 - 5)) {
           setCaption(chooseRandomWord(captionsPositive))
         } else {
           setCaption(chooseRandomWord(captionsNegative))
@@ -39,13 +42,13 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      await SplashScreen.preventAutoHideAsync();
+      SplashScreen.preventAutoHideAsync();
       if (await Barometer.isAvailableAsync()) {
         setBarometerAvailable(true);
         Barometer.addListener(barometerData => {
           setPressure(barometerData.pressure)
         })
-        if (pressure != 1013) {
+        if (pressure > 1013 + 5 || pressure < 1013 - 5) {
           setCaption(chooseRandomWord(captionsPositive))
         } else {
           setCaption(chooseRandomWord(captionsNegative))
@@ -75,21 +78,14 @@ export default function App() {
     backgroundImage: {
       height: Dimensions.get('screen').height,
       width: Dimensions.get('screen').width,
-      position: "absolute",
+      position: "absolute"
     },
     container: {
       height: Dimensions.get('screen').height,
       width: Dimensions.get('screen').width,
       position: "absolute",
-      justifyContent: "center"
+      justifyContent: "center",
     },
-    pressureTextStyle: {
-      textAlign: "center",
-      fontSize: 40
-    },
-    captionTextStyle: {
-      textAlign: "center"
-    }
   });
 
   if (!barometerAvailable && !locationPermissions) {
@@ -104,8 +100,30 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image source={require('./assets/splash.png')} style={styles.backgroundImage}></Image>
-      <Text style={styles.pressureTextStyle}>{pressure} hPa</Text>
-      <Text style={styles.captionTextStyle}>{caption}</Text>
+      {!showCredits &&
+        <Text style={{ textAlign: "center" }}>
+          <Text style={{ fontSize: 40 }}>{pressure} hPa</Text>{'\n'}
+          {caption}
+        </Text>
+      }
+      {showCredits &&
+        <Text style={{ textAlign: "center" }}>
+          <Text style={{ fontWeight: "bold" }}>Credits:{"\n"}</Text>
+            Background photo: Miguel Á. Padriñán (Pexels){"\n"}
+            Icon: Murat Kalkavan (Icons8){"\n"}
+          {!barometerAvailable && <Text>Data: Open Weather Map{"\n"}{"\n"}</Text>}
+        </Text>
+      }
+      <Ionicons name="ios-more"
+        onPress={() => showCredits ? setShowCredits(false) : setShowCredits(true)}
+        size={24}
+        color="#a9b5bc"
+        style={{
+          position: "absolute",
+          top: 50,
+          right: 30
+        }}
+      />
     </View>
   );
 }
