@@ -48,7 +48,7 @@ export default function App() {
         Barometer.addListener(barometerData => {
           setPressure(barometerData.pressure)
         })
-        if (pressure > 1013 + 5 || pressure < 1013 - 5) {
+        if (pressure > (1013 + 5) || pressure < (1013 - 5)) {
           setCaption(chooseRandomWord(captionsPositive))
         } else {
           setCaption(chooseRandomWord(captionsNegative))
