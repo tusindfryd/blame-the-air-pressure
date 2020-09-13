@@ -92,7 +92,7 @@ export default function App() {
     return (
       <View style={styles.container}>
         <Image source={require('./assets/splash.png')} style={styles.backgroundImage}></Image>
-        <Text style={styles.captionTextStyle}>Location permission not granted.</Text>
+        <Text style={{ textAlign: "center" }}>Location permission not granted.</Text>
       </View>
     )
   }

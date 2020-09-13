@@ -2,7 +2,7 @@
   "expo": {
     "name": "Blame the Air Pressure",
     "slug": "blame-the-air-pressure",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -21,9 +21,11 @@
     },
     "android": {
       "package": "io.blametheairpressure",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
         "MOTION"
       ]
     },
